@@ -21,15 +21,15 @@ public class CompetitionPage {
     @JoinColumn(name = "competition_id", nullable = false)
     private CompetitionBoard competitionBoard;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false) // 작성 시간
     private LocalDateTime createdAt;
 
     @Transient
-    private String title;
+    private String title;    // 제목
 
     @Transient
-    private String author;
+    private String author;    // 작성자
 
     @Transient
-    private Integer views;
+    private Integer views;    // 조회수
 }
