@@ -1,6 +1,5 @@
 package com.example.joinup.competitionboard.entity;
 
-import com.example.joinup.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,22 +14,32 @@ public class CompetitionBoard {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "competition_id")
-    private Integer competitionId;
+    @Column(name = "board_id")
+    private Integer boardId;
 
-    @Column(name = "title", nullable = false, length = 100) //제목
+    @OneToOne
+    @JoinColumn(name = "page_id", nullable = false) // CompetitionPage와 연결
+    private CompetitionPage competitionPage;
+
+    @Transient // CompetitionPage에서 제목 가져오기
     private String title;
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT") //본문
-    private String content;
+    @Transient // CompetitionPage에서 작성자 닉네임 가져오기
+    private String nickname;
 
-    @Column(name = "created_at", nullable = false) //작성시간
+    @Transient // CompetitionPage에서 작성일 가져오기
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Transient // CompetitionPage에서 조회수 가져오기
+    private Integer views;
 
-    @Column(name = "views", nullable = false) //조회수
-    private Integer views = 0;
+    @PostLoad
+    public void loadFromCompetitionPage() {
+        if (competitionPage != null) {
+            this.title = competitionPage.getTitle();
+            this.nickname = competitionPage.getNickname();
+            this.createdAt = competitionPage.getCreatedAt();
+            this.views = competitionPage.getViews();
+        }
+    }
 }
