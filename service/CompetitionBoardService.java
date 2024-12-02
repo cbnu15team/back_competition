@@ -1,46 +1,39 @@
 package com.example.joinup.competitionboard.service;
 
-import com.example.joinup.competitionboard.entity.CompetitionBoard;
-import com.example.joinup.competitionboard.repository.CompetitionBoardRepository;
+import com.example.joinup.competitionboard.dto.CompetitionBoardResponse;
+import com.example.joinup.competitionboard.entity.CompetitionPage;
+import com.example.joinup.competitionboard.repository.CompetitionPageRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompetitionBoardService {
 
-    private final CompetitionBoardRepository competitionBoardRepository;
+    private final CompetitionPageRepository competitionPageRepository;
 
-    public CompetitionBoardService(CompetitionBoardRepository competitionBoardRepository) {
-        this.competitionBoardRepository = competitionBoardRepository;
+    public CompetitionBoardService(CompetitionPageRepository competitionPageRepository) {
+        this.competitionPageRepository = competitionPageRepository;
     }
 
-    public List<CompetitionBoard> getAllBoards() {
-        return competitionBoardRepository.findAll();
+    // 특정 게시판의 페이지 목록 조회
+    public List<CompetitionBoardResponse> getPagesByBoardType(String boardType) {
+        List<CompetitionPage> pages = competitionPageRepository.findAll()
+                .stream()
+                //.filter(page -> page.getBoardType().equalsIgnoreCase(boardType))
+                .collect(Collectors.toList());
+
+        return pages.stream()
+                .map(CompetitionBoardResponse::new)
+                .collect(Collectors.toList());
     }
 
-    public CompetitionBoard getBoardById(Integer id) {
-        return competitionBoardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 ID의 게시글을 찾을 수 없습니다. ID: " + id));
-    }
-
-    public CompetitionBoard createBoard(CompetitionBoard board) {
-        board.setCreatedAt(LocalDateTime.now());
-        board.setViews(0);
-        return competitionBoardRepository.save(board);
-    }
-
-    public CompetitionBoard updateBoard(Integer id, CompetitionBoard updatedBoard) {
-        CompetitionBoard existingBoard = competitionBoardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 ID의 게시글을 찾을 수 없습니다. ID: " + id));
-
-        existingBoard.setTitle(updatedBoard.getTitle());
-        existingBoard.setContent(updatedBoard.getContent());
-        return competitionBoardRepository.save(existingBoard);
-    }
-
-    public void deleteBoardById(Integer id) {
-        competitionBoardRepository.deleteById(id);
+    // 전체 페이지 목록 조회
+    public List<CompetitionBoardResponse> getAllPages() {
+        return competitionPageRepository.findAll()
+                .stream()
+                .map(CompetitionBoardResponse::new)
+                .collect(Collectors.toList());
     }
 }
