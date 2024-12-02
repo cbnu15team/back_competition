@@ -1,6 +1,6 @@
 package com.example.joinup.competitionboard.controller;
 
-import com.example.joinup.competitionboard.entity.CompetitionPage;
+import com.example.joinup.competitionboard.dto.CompetitionPageResponse;
 import com.example.joinup.competitionboard.service.CompetitionPageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,17 +18,18 @@ public class CompetitionPageController {
     }
 
     @GetMapping
-    public List<CompetitionPage> getAllPages() {
-        return competitionPageService.getAllPages();
+    public ResponseEntity<List<CompetitionPageResponse>> getAllPages() {
+        List<CompetitionPageResponse> pages = competitionPageService.getAllPages();
+        return ResponseEntity.ok(pages);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updatePage(@PathVariable Integer id, @RequestBody CompetitionPage updatedPage) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPageById(@PathVariable Long id) {
         try {
-            CompetitionPage page = competitionPageService.updatePage(id, updatedPage);
+            CompetitionPageResponse page = competitionPageService.getPageById(id);
             return ResponseEntity.ok(page);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body("페이지 수정 실패: " + e.getMessage());
+            return ResponseEntity.badRequest().body("페이지 조회 실패: " + e.getMessage());
         }
     }
 }
